@@ -8,7 +8,7 @@ module.exports = {
     WAITING_RECEIPT: 'WAITING_RECEIPT',
   },
 
-  international_internet_table: [
+  internationalPlans: [
     { id: 'buy_international_10gb', package: 'یک ماهه 10 گیگابایت', price: '249,000 تومان' },
     { id: 'buy_international_15gb', package: 'یک ماهه 15 گیگابایت', price: '329,000 تومان' },
     { id: 'buy_international_20gb', package: 'یک ماهه 20 گیگابایت', price: '399,000 تومان' },
@@ -17,7 +17,7 @@ module.exports = {
     { id: 'buy_international_80gb', package: 'یک ماهه 80 گیگابایت', price: '1,199,000 تومان' },
   ],
 
-  domestic_internet_table: [
+  domesticPlans: [
     { id: 'buy_domestic_1gb', package: 'یک ماهه 1 گیگابایت', price: '199,000 تومان' },
     { id: 'buy_domestic_2gb', package: 'یک ماهه 2 گیگابایت', price: '349,000 تومان' },
     { id: 'buy_domestic_3gb', package: 'یک ماهه 3 گیگابایت', price: '549,000 تومان' },

@@ -1,4 +1,4 @@
-// src/handlers/startHandler.js
+// src/handlers/start.handler.js
 const { mainKeyboard } = require('../keyboards/keyboards');
 
 async function startCommand(ctx) {

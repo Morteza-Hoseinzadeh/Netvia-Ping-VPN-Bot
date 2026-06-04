@@ -3,7 +3,7 @@ const mainKeyboard = {
   reply_markup: {
     keyboard: [
       [{ text: 'خرید سرویس جدید 🚀' }],
-      [{ text: 'اکانت تست (به زودی) 🔷' }],
+      [{ text: 'سرویس های من 🔷' }],
       [{ text: 'تمدید سرویس 🔰' }, { text: 'میزان مصرف ⌛' }],
       [{ text: 'اطلاعات بیشتر ℹ️' }, { text: 'پشتیبانی 📞' }],
     ],
@@ -21,7 +21,4 @@ const serversListKeyboard = {
   },
 };
 
-module.exports = {
-  mainKeyboard,
-  serversListKeyboard,
-};
+module.exports = { mainKeyboard, serversListKeyboard };

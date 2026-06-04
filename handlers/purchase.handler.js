@@ -1,14 +1,13 @@
-// src/handlers/buyHandler.js
+// src/handlers/purchase.handler.js
+const constants = require('../config/constants');
 const { serversListKeyboard } = require('../keyboards/keyboards');
 const { generatePackagesKeyboard } = require('../utils/helpers');
-const constants = require('../config/constants');
 
-const { international_internet_table, domestic_internet_table, CARD_NUMBER, CARD_OWNER } = constants;
+const { internationalPlans, domesticPlans, CARD_NUMBER, CARD_OWNER } = constants;
 
 let selectedService = {};
-let serviceName = '';
 
-async function showBuyMenu(ctx) {
+async function showPurchaseMenu(ctx) {
   await ctx.sendChatAction('typing');
   await ctx.reply('پنل مورد نظر خود را انتخاب کنید:', { reply_markup: serversListKeyboard.reply_markup });
 }
@@ -39,7 +38,7 @@ async function showInternationalPlans(ctx) {
             { text: 'قیمت ها', callback_data: 'prices_table' },
             { text: 'تعرفه ها', callback_data: 'packages_table' },
           ],
-          ...generatePackagesKeyboard(international_internet_table, 'international'),
+          ...generatePackagesKeyboard(internationalPlans, 'international'),
           [{ text: '🏡 بازگشت به لیست سرویس ها', callback_data: 'server_list' }],
         ],
       },
@@ -69,7 +68,7 @@ async function showDomesticPlans(ctx) {
             { text: 'قیمت ها', callback_data: 'prices_table' },
             { text: 'تعرفه ها', callback_data: 'packages_table' },
           ],
-          ...generatePackagesKeyboard(domestic_internet_table, 'domestic'),
+          ...generatePackagesKeyboard(domesticPlans, 'domestic'),
           [{ text: '🏡 بازگشت به لیست سرویس ها', callback_data: 'server_list' }],
         ],
       },
@@ -77,27 +76,9 @@ async function showDomesticPlans(ctx) {
   );
 }
 
-// Register Buy Actions
-function registerBuyActions(bot) {
-  international_internet_table.forEach((plan) => {
-    const cb = plan.id;
-    bot.action(cb, async (ctx) => {
-      await ctx.deleteMessage();
-      selectedService = plan;
-      await ctx.reply(
-        `🛒 سرویس مورد نظر شما انتخاب شد.
-
-📦 پلن: ${plan.package}
-💰 قیمت: ${plan.price}
-
-👤 لطفاً یک نام کاربری با حروف لاتین و حداکثر 20 کاراکتر وارد نمایید: 👇`
-      );
-    });
-  });
-
-  domestic_internet_table.forEach((plan) => {
-    const cb = plan.id;
-    bot.action(cb, async (ctx) => {
+function registerPurchaseActions(bot) {
+  [...internationalPlans, ...domesticPlans].forEach((plan) => {
+    bot.action(plan.id, async (ctx) => {
       await ctx.deleteMessage();
       selectedService = plan;
       await ctx.reply(
@@ -112,17 +93,15 @@ function registerBuyActions(bot) {
   });
 }
 
-async function handleUsername(ctx) {
-  if (!selectedService?.package) return;
+async function handleUsernameInput(ctx) {
+  if (!selectedService.package) return;
 
   const username = ctx.message.text.trim();
   await ctx.sendChatAction('typing');
 
   if (!/^[a-zA-Z0-9_]{1,20}$/.test(username)) {
-    return await ctx.reply('نام کاربری نامعتبر است. لطفاً یک نام کاربری با حروف لاتین و حداکثر 20 کاراکتر وارد نمایید.');
+    return ctx.reply('نام کاربری نامعتبر است. لطفاً یک نام کاربری با حروف لاتین و حداکثر 20 کاراکتر وارد نمایید.');
   }
-
-  serviceName = username;
 
   await ctx.reply(
     `✅ سفارش شما با موفقیت ثبت شد.
@@ -131,7 +110,7 @@ async function handleUsername(ctx) {
 ${selectedService.package}
 
 👤 نام کاربری:
-${serviceName}
+${username}
 
 ━━━━━━━━━━━━━━━
 
@@ -150,7 +129,7 @@ ${CARD_OWNER}
     {
       parse_mode: 'Markdown',
       reply_markup: {
-        inline_keyboard: [[{ text: '📤 ارسال رسید پرداخت', callback_data: `send_receipt_${serviceName}` }]],
+        inline_keyboard: [[{ text: '📤 ارسال رسید پرداخت', callback_data: `send_receipt_${username}` }]],
       },
     }
   );
@@ -168,22 +147,20 @@ async function handleReceiptUpload(ctx) {
   const userData = waitingForReceipt.get(ctx.from.id);
   if (!userData) return;
 
-  let fileId = ctx.message.photo ? ctx.message.photo.at(-1).file_id : ctx.message.document?.file_id;
-
-  console.log('Receipt File ID:', fileId);
-
   waitingForReceipt.delete(ctx.from.id);
 
-  await ctx.reply('✅ رسید پرداخت با موفقیت دریافت شد.\n\nتیم پشتیبانی در اسرع وقت رسید شما را بررسی کرده و نتیجه را اطلاع خواهد داد.');
+  await ctx.reply('✅ رسید پرداخت با موفقیت دریافت شد.\n\nتیم پشتیبانی در اسرع وقت بررسی خواهد کرد.');
 }
 
+async function handleSendConfig(ctx) {}
+
 module.exports = {
-  showBuyMenu,
+  showPurchaseMenu,
   backToServerList,
   showInternationalPlans,
   showDomesticPlans,
-  registerBuyActions,
-  handleUsername,
+  registerPurchaseActions,
+  handleUsernameInput,
   handleSendReceipt,
   handleReceiptUpload,
 };
